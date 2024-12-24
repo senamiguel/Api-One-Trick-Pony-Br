@@ -2,7 +2,7 @@
 
 namespace Api_One_Trick_Pony_Br.Models
 {
-    public class Mono : Account
+    public class Pony : Account
     {
         public string Name { get; set; }
         public int Karma { get; set; }
@@ -13,11 +13,5 @@ namespace Api_One_Trick_Pony_Br.Models
         public List<SocialMedia> SocialMedias { get; set; }
         public List<Account> Accounts { get; set; }
         public List<Comment> Comments { get; set; }
-        public Mono()
-        {
-            SocialMedias = new List<SocialMedia>();
-            Accounts = new List<Account>();
-            Comments = new List<Comment>();
-        }
     }
 }
