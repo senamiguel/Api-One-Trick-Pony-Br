@@ -2,7 +2,7 @@
 {
     public class Comment
     {
-        public User? Author { get; set; }
+        public Account? Author { get; set; }
         public string? Message { get; set; }
         public DateTime Date { get; set; }
 
