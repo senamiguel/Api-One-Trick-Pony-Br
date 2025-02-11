@@ -1,6 +1,5 @@
-﻿using Api_One_Trick_Pony_Br.Data;
-using Api_One_Trick_Pony_Br.Models;
-using Microsoft.EntityFrameworkCore;
+﻿using Api_One_Trick_Pony_Br.Models;
+using Api_One_Trick_Pony_Br.Repository;
 
 namespace Api_One_Trick_Pony_Br.Services
 {
@@ -10,59 +9,58 @@ namespace Api_One_Trick_Pony_Br.Services
         {
             var group = routes.MapGroup("/api/Pony").WithTags(nameof(Pony));
 
-            group.MapGet("/", async (ApiContext service) =>
+            group.MapGet("/", async (PonyRepository repo) =>
             {
-                return await service.Pony.ToListAsync();
-
+                return await repo.GetAllAsync();
             })
             .WithName("GetAllPonys")
             .WithOpenApi();
 
-            group.MapGet("/{id}", async (ApiContext service, int id) =>
+            group.MapGet("/{id}", async (PonyRepository repo, int id) =>
             {
-                var pony = await service.Pony.FindAsync(id);
+                var pony = await repo.GetByIdAsync(id);
                 if (pony is null)
-                {
                     return Results.NotFound();
-                }
+                
                 return Results.Ok(pony);
             })
            .WithName("GetPonyById")
            .WithOpenApi();
 
-            group.MapPost("/", async (ApiContext service, Pony pony) =>
+            group.MapPost("/", async (PonyRepository repo, Pony pony) =>
             {
-                service.Pony.Add(pony);
-                await service.SaveChangesAsync();
-                return Results.Created($"/api/Pony/{pony.Id}", pony);
+                repo.AddAsync(pony);
+
+                if(pony == null)
+                    return Results.BadRequest();
+                
+                return Results.Created();
             })
             .WithName("CreatePony")
             .WithOpenApi();
 
-            group.MapPut("/{id}", async (ApiContext service, int id, Pony pony) =>
+            group.MapPut("/{id}", async (PonyRepository repo, int id, Pony pony) =>
             {
+                pony = await repo.GetByIdAsync(id);
+
                 if (id != pony.Id)
-                {
                     return Results.BadRequest();
-                }
-                service.Entry(pony).State = EntityState.Modified;
-                await service.SaveChangesAsync();
-                return Results.NoContent();
+
+                await repo.UpdateAsync(pony);
+                return Results.Ok();
             })
             .WithName("UpdatePony")
             .WithOpenApi();
 
-            group.MapDelete("/{id}", async (ApiContext service, int id) =>
+            group.MapDelete("/{id}", async (PonyRepository repo, int id) =>
             {
-                var delete = service.Pony.SingleOrDefault(pony => pony.Id == id);
+
+                var delete = repo.DeleteAsync(id);
 
                 if (delete == null)
                     return Results.NotFound();
 
-                var pony = service.Pony.Remove(delete);
-                service.SaveChanges();
-                return Results.Ok(pony);
-
+                return Results.Ok();
             })
             .WithName("DeletePony")
             .WithOpenApi();

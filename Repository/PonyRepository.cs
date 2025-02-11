@@ -25,26 +25,27 @@ namespace Api_One_Trick_Pony_Br.Repository
             return await _context.Pony.FindAsync(id);
         }
 
-        public async Task AddAsync(Pony poney)
+        public async Task AddAsync(Pony pony)
         {
-            await _context.Pony.AddAsync(poney);
+            await _context.Pony.AddAsync(pony);
             await _context.SaveChangesAsync();
         }
 
-        public async Task UpdateAsync(Pony poney)
+        public async Task UpdateAsync(Pony pony)
         {
-            _context.Pony.Update(poney);
+            _context.Pony.Update(pony);
             await _context.SaveChangesAsync();
         }
 
         public async Task DeleteAsync(int id)
         {
-            var poney = await GetByIdAsync(id);
-            if (poney != null)
+            var pony = await GetByIdAsync(id);
+            if (pony == null)
             {
-                _context.Pony.Remove(poney);
-                await _context.SaveChangesAsync();
+                Results.NotFound();
             }
+            _context.Pony.Remove(pony);
+            await _context.SaveChangesAsync();
         }
     }
 }
