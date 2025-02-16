@@ -30,17 +30,9 @@ namespace Api_One_Trick_Pony_Br.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Discriminator")
-                        .IsRequired()
-                        .HasMaxLength(8)
-                        .HasColumnType("character varying(8)");
-
-                    b.Property<string>("PlatformName")
+                    b.Property<string>("Password")
                         .IsRequired()
                         .HasColumnType("text");
-
-                    b.Property<int?>("PonyId")
-                        .HasColumnType("integer");
 
                     b.Property<string>("Username")
                         .IsRequired()
@@ -48,13 +40,7 @@ namespace Api_One_Trick_Pony_Br.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("PonyId");
-
                     b.ToTable("Account");
-
-                    b.HasDiscriminator().HasValue("Account");
-
-                    b.UseTphMappingStrategy();
                 });
 
             modelBuilder.Entity("Api_One_Trick_Pony_Br.Models.Comment", b =>
@@ -65,21 +51,17 @@ namespace Api_One_Trick_Pony_Br.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("AuthorId")
-                        .HasColumnType("integer");
-
                     b.Property<DateTime>("Date")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Message")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<int?>("PonyId")
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("AuthorId");
 
                     b.HasIndex("PonyId");
 
@@ -94,10 +76,12 @@ namespace Api_One_Trick_Pony_Br.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Icon")
+                    b.Property<string>("Image")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("Name")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("Id");
@@ -105,7 +89,7 @@ namespace Api_One_Trick_Pony_Br.Migrations
                     b.ToTable("Platform");
                 });
 
-            modelBuilder.Entity("Api_One_Trick_Pony_Br.Models.SocialMedia", b =>
+            modelBuilder.Entity("Api_One_Trick_Pony_Br.Models.Pony", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -113,28 +97,8 @@ namespace Api_One_Trick_Pony_Br.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Link")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<int>("PlatformId")
+                    b.Property<int>("AccountId")
                         .HasColumnType("integer");
-
-                    b.Property<int?>("PonyId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("PlatformId");
-
-                    b.HasIndex("PonyId");
-
-                    b.ToTable("SocialMedia");
-                });
-
-            modelBuilder.Entity("Api_One_Trick_Pony_Br.Models.Pony", b =>
-                {
-                    b.HasBaseType("Api_One_Trick_Pony_Br.Models.Account");
 
                     b.Property<string>("Bio")
                         .IsRequired()
@@ -150,42 +114,67 @@ namespace Api_One_Trick_Pony_Br.Migrations
                     b.Property<int>("Karma")
                         .HasColumnType("integer");
 
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.Property<string>("Rank")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.HasDiscriminator().HasValue("Pony");
-                });
+                    b.HasKey("Id");
 
-            modelBuilder.Entity("Api_One_Trick_Pony_Br.Models.Account", b =>
-                {
-                    b.HasOne("Api_One_Trick_Pony_Br.Models.Pony", null)
-                        .WithMany("Accounts")
-                        .HasForeignKey("PonyId");
-                });
+                    b.HasIndex("AccountId");
 
-            modelBuilder.Entity("Api_One_Trick_Pony_Br.Models.Comment", b =>
-                {
-                    b.HasOne("Api_One_Trick_Pony_Br.Models.Account", "Author")
-                        .WithMany()
-                        .HasForeignKey("AuthorId");
-
-                    b.HasOne("Api_One_Trick_Pony_Br.Models.Pony", null)
-                        .WithMany("Comments")
-                        .HasForeignKey("PonyId");
-
-                    b.Navigation("Author");
+                    b.ToTable("Pony");
                 });
 
             modelBuilder.Entity("Api_One_Trick_Pony_Br.Models.SocialMedia", b =>
                 {
-                    b.HasOne("Api_One_Trick_Pony_Br.Models.Platform", "Platform")
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Link")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("MediaId")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("PonyId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MediaId");
+
+                    b.HasIndex("PonyId");
+
+                    b.ToTable("SocialMedia");
+                });
+
+            modelBuilder.Entity("Api_One_Trick_Pony_Br.Models.Comment", b =>
+                {
+                    b.HasOne("Api_One_Trick_Pony_Br.Models.Pony", null)
+                        .WithMany("Comment")
+                        .HasForeignKey("PonyId");
+                });
+
+            modelBuilder.Entity("Api_One_Trick_Pony_Br.Models.Pony", b =>
+                {
+                    b.HasOne("Api_One_Trick_Pony_Br.Models.Account", "Account")
                         .WithMany()
-                        .HasForeignKey("PlatformId")
+                        .HasForeignKey("AccountId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Account");
+                });
+
+            modelBuilder.Entity("Api_One_Trick_Pony_Br.Models.SocialMedia", b =>
+                {
+                    b.HasOne("Api_One_Trick_Pony_Br.Models.Platform", "Media")
+                        .WithMany()
+                        .HasForeignKey("MediaId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -193,14 +182,12 @@ namespace Api_One_Trick_Pony_Br.Migrations
                         .WithMany("SocialMedias")
                         .HasForeignKey("PonyId");
 
-                    b.Navigation("Platform");
+                    b.Navigation("Media");
                 });
 
             modelBuilder.Entity("Api_One_Trick_Pony_Br.Models.Pony", b =>
                 {
-                    b.Navigation("Accounts");
-
-                    b.Navigation("Comments");
+                    b.Navigation("Comment");
 
                     b.Navigation("SocialMedias");
                 });

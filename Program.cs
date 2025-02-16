@@ -32,10 +32,4 @@ app.MapControllers();
 
 app.MapPonyEndpoints();
 
-app.MapPlatformEndpoints();
-
-app.MapCommentEndpoints();
-
-app.MapSocialMediaEndpoints();
-
 app.Run();

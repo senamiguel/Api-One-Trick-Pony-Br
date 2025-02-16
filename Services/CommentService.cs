@@ -1,5 +1,6 @@
 ﻿using Api_One_Trick_Pony_Br.Data;
 using Api_One_Trick_Pony_Br.Models;
+using Api_One_Trick_Pony_Br.Repository;
 using Microsoft.EntityFrameworkCore;
 
 namespace Api_One_Trick_Pony_Br.Services
@@ -10,16 +11,16 @@ namespace Api_One_Trick_Pony_Br.Services
         {
             var group = routes.MapGroup("/api/Comment").WithTags(nameof(Comment));
 
-            group.MapGet("/", async (ApiContext service) =>
+            group.MapGet("/", async (CommentRepository repo) =>
             {
-                return await service.Comment.ToListAsync();
+                return await repo.GetAllAsync();
             })
             .WithName("GetAllComments")
             .WithOpenApi();
 
-            group.MapGet("/{id}", async (ApiContext service, int id) =>
+            group.MapGet("/{id}", async (CommentRepository repo, int id) =>
             {
-                var comment = await service.Comment.FindAsync(id);
+                var comment = await repo.GetByIdAsync(id);
                 if (comment is null)
                 {
                     return Results.NotFound();
@@ -29,38 +30,36 @@ namespace Api_One_Trick_Pony_Br.Services
            .WithName("GetCommentById")
            .WithOpenApi();
 
-            group.MapPost("/", async (ApiContext service, Comment comment) =>
+            group.MapPost("/", async (CommentRepository repo, Comment comment) =>
             {
-                service.Comment.Add(comment);
-                await service.SaveChangesAsync();
+                repo.AddAsync(comment);
+ 
                 return Results.Created($"/api/Comment/{comment.Id}", comment);
             })
             .WithName("CreateComment")
             .WithOpenApi();
 
-            group.MapPut("/{id}", async (ApiContext service, int id, Comment comment) =>
+            group.MapPut("/{id}", async (CommentRepository repo, int id, Comment comment) =>
             {
+                comment = await repo.GetByIdAsync(id);
+
                 if (id != comment.Id)
-                {
                     return Results.BadRequest();
-                }
-                service.Entry(comment).State = EntityState.Modified;
-                await service.SaveChangesAsync();
-                return Results.NoContent();
+
+                await repo.UpdateAsync(comment);
+                return Results.Ok();
             })
             .WithName("UpdateComment")
             .WithOpenApi();
 
-            group.MapDelete("/{id}", async (ApiContext service, int id) =>
+            group.MapDelete("/{id}", async (CommentRepository repo, int id) =>
             {
-                var delete = service.Comment.SingleOrDefault(comment => comment.Id == id);
+                var delete = repo.DeleteAsync(id);
 
                 if (delete == null)
                     return Results.NotFound();
 
-                var comment = service.Comment.Remove(delete);
-                service.SaveChanges();
-                return Results.Ok(comment);
+                return Results.Ok();
             })
             .WithName("DeleteComment")
             .WithOpenApi();

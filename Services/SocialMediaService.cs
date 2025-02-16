@@ -1,5 +1,6 @@
 ﻿using Api_One_Trick_Pony_Br.Data;
 using Api_One_Trick_Pony_Br.Models;
+using Api_One_Trick_Pony_Br.Repository;
 using Microsoft.EntityFrameworkCore;
 
 namespace Api_One_Trick_Pony_Br.Services
@@ -10,56 +11,53 @@ namespace Api_One_Trick_Pony_Br.Services
         {
             var group = routes.MapGroup("/api/SocialMedia").WithTags(nameof(SocialMedia));
 
-            group.MapGet("/", async (ApiContext service) =>
+            group.MapGet("/", async (SocialMediaRepository repo) =>
             {
-                return await service.SocialMedia.ToListAsync();
+                return await repo.GetAllAsync();
             })
             .WithName("GetAllSocialMedias")
             .WithOpenApi();
 
-            group.MapGet("/{id}", async (ApiContext service, int id) =>
+            group.MapGet("/{id}", async (SocialMediaRepository repo, int id) =>
             {
-                var socialMedia = await service.SocialMedia.FindAsync(id);
+                var socialMedia = await repo.GetByIdAsync(id);
                 if (socialMedia is null)
-                {
                     return Results.NotFound();
-                }
+
                 return Results.Ok(socialMedia);
             })
             .WithName("GetSocialMediaById")
             .WithOpenApi();
 
-            group.MapPost("/", async (ApiContext service, SocialMedia socialMedia) =>
+            group.MapPost("/", async (SocialMediaRepository repo, SocialMedia socialMedia) =>
             {
-                service.SocialMedia.Add(socialMedia);
-                await service.SaveChangesAsync();
+                repo.AddAsync(socialMedia);
+
                 return Results.Created($"/api/SocialMedia/{socialMedia.Id}", socialMedia);
             })
             .WithName("CreateSocialMedia")
             .WithOpenApi();
 
-            group.MapPut("/{id}", async (ApiContext service, int id, SocialMedia socialMedia) =>
+            group.MapPut("/{id}", async (SocialMediaRepository repo, int id, SocialMedia socialMedia) =>
             {
+                socialMedia = await repo.GetByIdAsync(id);
+
                 if (id != socialMedia.Id)
-                {
                     return Results.BadRequest();
-                }
-                service.Entry(socialMedia).State = EntityState.Modified;
-                await service.SaveChangesAsync();
-                return Results.NoContent();
+
+                await repo.UpdateAsync(socialMedia);
+                return Results.Ok();
             })
             .WithName("UpdateSocialMedia")
             .WithOpenApi();
 
-            group.MapDelete("/{id}", async (ApiContext service, int id) =>
+            group.MapDelete("/{id}", async (SocialMediaRepository repo, int id) =>
             {
-                var delete = service.SocialMedia.SingleOrDefault(socialMedia => socialMedia.Id == id);
+                var delete = repo.DeleteAsync(id);
                 if (delete == null)
                     return Results.NotFound();
 
-                var media = service.SocialMedia.Remove(delete);
-                await service.SaveChangesAsync();
-                return Results.Ok(media);
+                return Results.Ok();
             })
             .WithName("DeleteSocialMedia")
             .WithOpenApi();
