@@ -1,11 +1,11 @@
 ﻿using Api_One_Trick_Pony_Br.Data;
 using Api_One_Trick_Pony_Br.Models;
-using Microsoft.AspNetCore.Mvc;
+using Api_One_Trick_Pony_Br.Repository.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace Api_One_Trick_Pony_Br.Repository
 {
-    public class SocialMediaRepository
+    public class SocialMediaRepository : ISocialMediaRepository
     {
         private readonly ApiContext _context;
 
