@@ -19,24 +19,24 @@ namespace Api_One_Trick_Pony_Br.Repository
             return await _context.SocialMedia.ToListAsync();
         }
 
-        public async Task<SocialMedia?> GetByIdAsync([FromBody] int id)
+        public async Task<SocialMedia?> GetByIdAsync(int id)
         {
             return await _context.SocialMedia.FindAsync(id);
         }
 
-        public async Task AddAsync([FromBody] SocialMedia socialMedia)
+        public async Task AddAsync(SocialMedia socialMedia)
         {
             await _context.SocialMedia.AddAsync(socialMedia);
             await _context.SaveChangesAsync();
         }
 
-        public async Task UpdateAsync([FromBody] SocialMedia socialMedia)
+        public async Task UpdateAsync(SocialMedia socialMedia)
         {
             _context.SocialMedia.Update(socialMedia);
             await _context.SaveChangesAsync();
         }
 
-        public async Task DeleteAsync([FromBody] int id)
+        public async Task DeleteAsync(int id)
         {
             var socialMedia = await GetByIdAsync(id);
             if (socialMedia == null)
