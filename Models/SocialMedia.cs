@@ -2,7 +2,8 @@
 {
     public class SocialMedia
     {
+        public int Id { get; set; }
         public string Link { get; set; }
-        public Platform Platform { get; set; }
+        public Platform Media { get; set; }
     }
 }
