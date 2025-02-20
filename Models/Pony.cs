@@ -12,8 +12,8 @@ namespace Api_One_Trick_Pony_Br.Models
         public int Karma { get; set; }
         public string Champion { get; set; }
         public string Rank { get; set; }
-        public List<SocialMedia> SocialMedias { get; set; } 
-        public List<Comment> Comment { get; set; }
+        public List<SocialMedia> SocialMedias { get; set; }
+        public List<Comment> Comments { get; set; }
         public Account Account { get; set; }
     }
 }

@@ -6,8 +6,8 @@ namespace Api_One_Trick_Pony_Br.Repository.Interfaces
     {
         Task<List<SocialMedia>> GetAllAsync();
         Task<SocialMedia?> GetByIdAsync(int id);
-        Task AddAsync(SocialMedia social);
-        Task UpdateAsync(SocialMedia social);
+        Task AddAsync(SocialMedia socialMedia);
+        Task UpdateAsync(SocialMedia socialMedia, int id);
         Task DeleteAsync(int id);
     }
 }

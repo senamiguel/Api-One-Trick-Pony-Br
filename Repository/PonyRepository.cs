@@ -3,6 +3,7 @@ using Api_One_Trick_Pony_Br.Models;
 using Api_One_Trick_Pony_Br.Repository.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using System;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace Api_One_Trick_Pony_Br.Repository
 {
@@ -31,21 +32,32 @@ namespace Api_One_Trick_Pony_Br.Repository
             await _context.SaveChangesAsync();
         }
 
-        public async Task UpdateAsync(Pony pony)
+        public async Task UpdateAsync(Pony update, int id)
         {
-            _context.Pony.Update(pony);
+            var pony = await _context.Pony.FindAsync(id);
+
+            if (pony is null)
+                Results.BadRequest("Pony não encontrada.");
+
+            pony.Bio = update.Bio;
+            pony.IconId = update.IconId;
+            pony.Karma = update.Karma;
+            pony.Champion = update.Champion;
+            pony.Rank = update.Rank;
+
             await _context.SaveChangesAsync();
+            Results.Ok(pony);
         }
 
         public async Task DeleteAsync(int id)
         {
-            var pony = await GetByIdAsync(id);
-            if (pony == null)
-            {
+            var pony = await _context.Pony.FindAsync(id);
+            if (pony is null)
                 Results.NotFound();
-            }
+
             _context.Pony.Remove(pony);
             await _context.SaveChangesAsync();
+            Results.Ok();
         }
     }
 }

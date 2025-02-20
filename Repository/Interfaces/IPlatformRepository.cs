@@ -7,7 +7,7 @@ namespace Api_One_Trick_Pony_Br.Repository.Interfaces
         Task<List<Platform>> GetAllAsync();
         Task<Platform?> GetByIdAsync(int id);
         Task AddAsync(Platform platform);
-        Task UpdateAsync(Platform platform);
+        Task UpdateAsync(Platform platform ,int id);
         Task DeleteAsync(int id);
     }
 }

@@ -29,7 +29,7 @@ namespace Api_One_Trick_Pony_Br.Services
 
             group.MapPost("/", async (PonyRepository repo, Pony pony) =>
             {
-                repo.AddAsync(pony);
+                await repo.AddAsync(pony);
 
                 if(pony == null)
                     return Results.BadRequest();
@@ -41,26 +41,14 @@ namespace Api_One_Trick_Pony_Br.Services
 
             group.MapPut("/{id}", async (PonyRepository repo, int id, Pony pony) =>
             {
-                pony = await repo.GetByIdAsync(id);
-
-                if (id != pony.Id)
-                    return Results.BadRequest();
-
-                await repo.UpdateAsync(pony);
-                return Results.Ok();
+                await repo.UpdateAsync(pony, id);
             })
             .WithName("UpdatePony")
             .WithOpenApi();
 
             group.MapDelete("/{id}", async (PonyRepository repo, int id) =>
             {
-
-                var delete = repo.DeleteAsync(id);
-
-                if (delete == null)
-                    return Results.NotFound();
-
-                return Results.Ok();
+                await repo.DeleteAsync(id);
             })
             .WithName("DeletePony")
             .WithOpenApi();

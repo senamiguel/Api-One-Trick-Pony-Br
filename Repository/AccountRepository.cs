@@ -32,21 +32,30 @@ namespace Api_One_Trick_Pony_Br.Repository
             await _context.SaveChangesAsync();
         }
 
-        public async Task UpdateAsync(Account account)
+        public async Task UpdateAsync(Account update, int id)
         {
-            _context.Account.Update(account);
+            var account = await _context.Account.FindAsync(id);
+
+            if (account is null)
+                Results.BadRequest("Conta não encontrada.");
+
+            account.Username = update.Username;
+            account.Password = update.Password;
+
             await _context.SaveChangesAsync();
+            Results.Ok(account);
         }
 
         public async Task DeleteAsync(int id)
         {
-            var account = await GetByIdAsync(id);
-            if (account == null)
-            {
+            var platform = await _context.Account.FindAsync(id);
+
+            if (platform is null)
                 Results.NotFound();
-            }
-            _context.Account.Remove(account);
+
+            _context.Account.Remove(platform);
             await _context.SaveChangesAsync();
+            Results.Ok();
         }
     }
 }
