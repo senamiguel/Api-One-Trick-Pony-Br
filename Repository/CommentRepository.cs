@@ -20,32 +20,33 @@ namespace Api_One_Trick_Pony_Br.Repository
             return await _context.Comment.ToListAsync();
         }
 
-        public async Task<Comment?> GetByIdAsync([FromBody] int id)
+        public async Task<Comment?> GetByIdAsync(int id)
         {
             return await _context.Comment.FindAsync(id);
         }
 
-        public async Task AddAsync([FromBody] Comment comment)
+        public async Task AddAsync(Comment comment)
         {
             await _context.Comment.AddAsync(comment);
             await _context.SaveChangesAsync();
         }
 
-        public async Task UpdateAsync([FromBody] Comment comment)
+        public async Task UpdateAsync(Comment comment, int id)
         {
             _context.Comment.Update(comment);
             await _context.SaveChangesAsync();
         }
 
-        public async Task DeleteAsync([FromBody] int id)
+        public async Task DeleteAsync(int id)
         {
-            var comment = await GetByIdAsync(id);
-            if (comment == null)
-            {
+            var comment = await _context.Comment.FindAsync(id);
+
+            if (comment is null)
                 Results.NotFound();
-            }
+
             _context.Comment.Remove(comment);
             await _context.SaveChangesAsync();
+            Results.Ok();
         }
     }
 }

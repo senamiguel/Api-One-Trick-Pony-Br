@@ -22,29 +22,39 @@ namespace Api_One_Trick_Pony_Br.Repository
         public async Task<Platform?> GetByIdAsync(int id)
         {
             return await _context.Platform.FindAsync(id);
+           
         }
 
-        public async Task AddAsync(Account account)
+        public async Task AddAsync(Platform platform)
         {
-            await _context.Account.AddAsync(account);
+            await _context.Platform.AddAsync(platform);
             await _context.SaveChangesAsync();
         }
 
-        public async Task UpdateAsync(Account account)
+        public async Task UpdateAsync(Platform update, int id)
         {
-            _context.Account.Update(account);
+            var platform = await _context.Platform.FindAsync(id);
+
+            if (platform is null) 
+                Results.BadRequest("Plataforma não encontrada.");
+
+            platform.Image = update.Image;
+            platform.Name = update.Name;
+            
             await _context.SaveChangesAsync();
+            Results.Ok(platform);
         }
 
         public async Task DeleteAsync(int id)
         {
-            var platform = await GetByIdAsync(id);
-            if (platform == null)
-            {
+            var platform = await _context.Platform.FindAsync(id);
+
+            if (platform is null)
                 Results.NotFound();
-            }
+
             _context.Platform.Remove(platform);
             await _context.SaveChangesAsync();
+            Results.Ok();
         }
     }
 }

@@ -31,7 +31,7 @@ namespace Api_One_Trick_Pony_Br.Services
 
             group.MapPost("/", async (SocialMediaRepository repo, SocialMedia socialMedia) =>
             {
-                repo.AddAsync(socialMedia);
+                await repo.AddAsync(socialMedia);
 
                 return Results.Created($"/api/SocialMedia/{socialMedia.Id}", socialMedia);
             })
@@ -40,24 +40,14 @@ namespace Api_One_Trick_Pony_Br.Services
 
             group.MapPut("/{id}", async (SocialMediaRepository repo, int id, SocialMedia socialMedia) =>
             {
-                socialMedia = await repo.GetByIdAsync(id);
-
-                if (id != socialMedia.Id)
-                    return Results.BadRequest();
-
-                await repo.UpdateAsync(socialMedia);
-                return Results.Ok();
+                await repo.UpdateAsync(socialMedia, id);
             })
             .WithName("UpdateSocialMedia")
             .WithOpenApi();
 
             group.MapDelete("/{id}", async (SocialMediaRepository repo, int id) =>
             {
-                var delete = repo.DeleteAsync(id);
-                if (delete == null)
-                    return Results.NotFound();
-
-                return Results.Ok();
+                await repo.DeleteAsync(id);
             })
             .WithName("DeleteSocialMedia")
             .WithOpenApi();

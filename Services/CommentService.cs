@@ -32,34 +32,23 @@ namespace Api_One_Trick_Pony_Br.Services
 
             group.MapPost("/", async (CommentRepository repo, Comment comment) =>
             {
-                repo.AddAsync(comment);
+                await repo.AddAsync(comment);
  
                 return Results.Created($"/api/Comment/{comment.Id}", comment);
             })
             .WithName("CreateComment")
             .WithOpenApi();
 
-            group.MapPut("/{id}", async (CommentRepository repo, int id, Comment comment) =>
+            group.MapPut("/{id}", async (CommentRepository repo, int id, Comment update) =>
             {
-                comment = await repo.GetByIdAsync(id);
-
-                if (id != comment.Id)
-                    return Results.BadRequest();
-
-                await repo.UpdateAsync(comment);
-                return Results.Ok();
+                await repo.UpdateAsync(update, id);
             })
             .WithName("UpdateComment")
             .WithOpenApi();
 
             group.MapDelete("/{id}", async (CommentRepository repo, int id) =>
             {
-                var delete = repo.DeleteAsync(id);
-
-                if (delete == null)
-                    return Results.NotFound();
-
-                return Results.Ok();
+                await repo.DeleteAsync(id);
             })
             .WithName("DeleteComment")
             .WithOpenApi();

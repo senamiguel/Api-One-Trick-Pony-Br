@@ -13,6 +13,10 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddScoped<PonyRepository>();
+builder.Services.AddScoped<PlatformRepository>();
+builder.Services.AddScoped<SocialMediaRepository>();
+builder.Services.AddScoped<CommentRepository>();
+builder.Services.AddScoped<AccountRepository>();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
@@ -31,5 +35,13 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.MapPonyEndpoints();
+
+app.MapPlatformEndpoints();
+
+app.MapAccountEndpoints();
+
+app.MapCommentEndpoints();
+
+app.MapSocialMediaEndpoints();
 
 app.Run();
